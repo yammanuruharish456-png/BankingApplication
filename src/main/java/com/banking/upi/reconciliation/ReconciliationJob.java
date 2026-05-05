@@ -23,6 +23,7 @@ public class ReconciliationJob {
     private final BalanceRepository balanceRepository;
     private final LedgerEntryRepository ledgerEntryRepository;
 
+    // Runs every hour at minute 0 (e.g., 01:00, 02:00, ...)
     @Scheduled(cron = "0 0 * * * *")
     public void reconcile() {
         log.info("Starting hourly reconciliation job...");

@@ -43,7 +43,8 @@ public class TransferService {
             try {
                 return objectMapper.readValue(existingKey.get().getResponseBody(), TransferResponse.class);
             } catch (Exception e) {
-                log.warn("Could not deserialize cached response for idempotency key: {}", idempotencyKeyValue);
+                log.error("Could not deserialize cached response for idempotency key: {}. Rejecting to prevent duplicate transaction.", idempotencyKeyValue);
+                throw new ApiException(HttpStatus.CONFLICT, "Duplicate idempotency key with unreadable cached response");
             }
         }
 
