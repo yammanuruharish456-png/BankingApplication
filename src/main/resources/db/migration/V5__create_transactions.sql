@@ -1,0 +1,29 @@
+CREATE TABLE transactions (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  txn_ref VARCHAR(64) UNIQUE NOT NULL,
+  payer_vpa VARCHAR(100) NOT NULL,
+  payee_vpa VARCHAR(100) NOT NULL,
+  payer_account_id BIGINT NOT NULL,
+  payee_account_id BIGINT NOT NULL,
+  amount DECIMAL(18,2) NOT NULL,
+  note VARCHAR(255),
+  status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+  txn_type VARCHAR(20) NOT NULL DEFAULT 'PAY',
+  client_ref VARCHAR(100),
+  idempotency_key VARCHAR(128) UNIQUE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  CONSTRAINT fk_txn_payer FOREIGN KEY (payer_account_id) REFERENCES accounts(id),
+  CONSTRAINT fk_txn_payee FOREIGN KEY (payee_account_id) REFERENCES accounts(id)
+);
+
+CREATE TABLE ledger_entries (
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  txn_id BIGINT NOT NULL,
+  account_id BIGINT NOT NULL,
+  entry_type VARCHAR(10) NOT NULL,
+  amount DECIMAL(18,2) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_le_txn FOREIGN KEY (txn_id) REFERENCES transactions(id),
+  CONSTRAINT fk_le_acc FOREIGN KEY (account_id) REFERENCES accounts(id)
+);
